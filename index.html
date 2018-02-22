@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>tweatter</title>
+    <link href="index.css" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.25.0/babel.min.js"></script>
@@ -11,20 +12,40 @@
     <div id="root"></div>
      
     <script type="text/babel">
-        class Hello extends React.Component {
+        class App extends React.Component {
+            constructor(props){
+                super(props);
+                this.state = {
+                    tweeets: []
+                }
+            }
+            submit(e){
+                e.preventDefault();
+                const id = document.getElementById('userId').value;
+                const path = '/timeline?id=' + id;
+                fetch(path)
+                    .then(res => res.json())
+                    .then(res => {
+                        this.setState({tweeets: res})
+                    })
+            }
+            get tweeets(){
+                return this.state.tweeets.length ? this.state.tweeets.map((x) => (<article className="twit">{x.text}</article>)) : ''
+            }
             render() {
                 return (
                     <article>
-                        <form action="/timeline" method="get">
-                            <input type="text" name="id" id="id" placeholder="enter twitter id"></input>
+                        <form onSubmit={this.submit.bind(this)}>
+                            <input type="text" name="id" id="userId" placeholder="enter twitter id"></input>
                             <input type="submit" value="Submit"></input>
                         </form>
+                        <section>{this.tweeets}</section>
                     </article>
                 );
             }
         }
         ReactDOM.render(
-            <Hello></Hello>,
+            <App></App>,
             document.getElementById("root")
         )
    </script>
